@@ -1,0 +1,40 @@
+header.main-header { margin-bottom: 1rem; background: #0b5fb3; padding: 0.75rem 1rem; }
+header.main-header nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+header.main-header .nav-center {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex: 1 1 auto;
+}
+header.main-header .nav-right {
+  margin-left: auto;
+}
+
+header.main-header nav button { margin-right: 0; padding: 0.5rem 0.9rem; border: 1px solid transparent; background: transparent; color: #e3f2ff; border-radius: 4px; font-weight: 600; }
+header.main-header nav button:hover { background: rgba(255,255,255,0.12); }
+header.main-header button.active { background: #e3f2ff; color: #0b5fb3; }
+
+header.main-header .btn-logout { background: #dc3545; color: #fff; border-color: #dc3545; }
+header.main-header .btn-logout:hover { background: #b02a37; border-color: #b02a37; }
+@media (max-width: 576px) {
+  header.main-header nav {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  header.main-header .nav-center {
+    justify-content: center;
+  }
+  header.main-header .nav-right {
+    margin-left: 0;
+    display: flex;
+    justify-content: center;
+  }
+}

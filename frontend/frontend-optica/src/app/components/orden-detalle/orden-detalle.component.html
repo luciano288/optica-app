@@ -1,0 +1,116 @@
+<div *ngIf="paciente; else (error ? error : cargando)" class="container mt-5">
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h2 class="mb-0">Detalle de la Orden</h2>
+    </div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <b>Número de Orden:</b> {{ paciente._id }}
+        </div>
+        <div class="col-md-6">
+          <b>Fecha:</b> {{ formatearFecha(paciente.fecha) }}
+        </div>
+      </div>
+
+      <hr>
+
+      <h4 class="card-title">Datos del Paciente</h4>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <b>Paciente:</b> {{ paciente.paciente }}
+        </div>
+        <div class="col-md-6">
+          <b>Fecha de Nacimiento:</b> {{ formatearFecha(paciente.fechaNacimiento) }}
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <b>Celular:</b> {{ paciente.celular || 'No especificado' }}
+        </div>
+        <div class="col-md-6">
+          <b>Email:</b> {{ paciente.email || 'No especificado' }}
+        </div>
+      </div>
+
+      <hr>
+
+      <h4 class="card-title">Datos de la Óptica</h4>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <b>Óptica:</b> {{ paciente.optica }}
+        </div>
+        <div class="col-md-6">
+          <b>Doctor:</b> {{ paciente.doctor || 'No especificado' }}
+        </div>
+      </div>
+
+      <hr>
+
+      <h4 class="card-title">Prescripción</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead class="table-dark">
+            <tr>
+              <th>Ojo</th>
+              <th>Esf.</th>
+              <th>Cil.</th>
+              <th>Eje</th>
+              <th>Ad.</th>
+              <th>DNP</th>
+              <th>Alt.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>OD</b></td>
+              <td>{{ paciente.prescripcion?.OD?.Esf || '-' }}</td>
+              <td>{{ paciente.prescripcion?.OD?.Cil || '-' }}</td>
+              <td>{{ paciente.prescripcion?.OD?.Eje || '-' }}</td>
+              <td>{{ paciente.prescripcion?.OD?.Ad || '-' }}</td>
+              <td>{{ paciente.prescripcion?.OD?.DNP || '-' }}</td>
+              <td>{{ paciente.prescripcion?.OD?.Alt || '-' }}</td>
+            </tr>
+            <tr>
+              <td><b>OI</b></td>
+              <td>{{ paciente.prescripcion?.OI?.Esf || '-' }}</td>
+              <td>{{ paciente.prescripcion?.OI?.Cil || '-' }}</td>
+              <td>{{ paciente.prescripcion?.OI?.Eje || '-' }}</td>
+              <td>{{ paciente.prescripcion?.OI?.Ad || '-' }}</td>
+              <td>{{ paciente.prescripcion?.OI?.DNP || '-' }}</td>
+              <td>{{ paciente.prescripcion?.OI?.Alt || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr>
+
+      <h4 class="card-title">Comentarios</h4>
+      <div class="mb-3">
+        <b>Comentario:</b> {{ paciente.comentario || 'Sin comentarios' }}
+      </div>
+
+      <div class="mb-3" *ngIf="paciente.codigoQr">
+        <b>Código QR:</b><br>
+        <img [src]="paciente.codigoQr" alt="QR" style="max-width:150px;" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #cargando>
+  <div class="container mt-5">
+    <div class="alert alert-info" role="alert">
+      Cargando datos de la orden...
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #error>
+  <div class="container mt-5">
+    <div class="alert alert-danger" role="alert">
+      Error al cargar los datos. Por favor, verifica que el backend esté corriendo en http://localhost:3000
+    </div>
+  </div>
+</ng-template>

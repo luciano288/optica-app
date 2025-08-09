@@ -1,0 +1,76 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h2 class="mb-4">Lista de Pacientes</h2>
+      
+      <!-- Loading -->
+      <div *ngIf="loading" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2">Cargando pacientes...</p>
+      </div>
+
+      <!-- Error -->
+      <div *ngIf="error && !unauthorized" class="alert alert-danger" role="alert">
+        Error al cargar los pacientes. Por favor, verifica que el backend esté corriendo.
+      </div>
+      <div *ngIf="unauthorized" class="alert alert-warning" role="alert">
+        Sesión expirada o no iniciada. Por favor, vuelve a iniciar sesión.
+      </div>
+
+      <!-- Lista de pacientes -->
+      <div *ngIf="!loading && !error">
+        <div *ngIf="pacientes.length === 0" class="text-center">
+          <p class="text-muted">No hay pacientes registrados.</p>
+        </div>
+        
+        <div *ngIf="pacientes.length > 0" class="row">
+          <div *ngFor="let paciente of pacientes" class="col-md-6 col-lg-4 mb-4">
+            <div class="card paciente-card" (click)="verOrden(paciente._id)">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="card-title mb-0">{{ paciente.paciente }}</h5>
+                  <span class="badge bg-primary">{{ paciente._id }}</span>
+                </div>
+                
+                <div class="paciente-info">
+                  <p class="mb-1">
+                    <i class="bi bi-calendar"></i>
+                    <strong>Fecha:</strong> {{ formatearFecha(paciente.fecha) }}
+                  </p>
+                  
+                  <p class="mb-1">
+                    <i class="bi bi-building"></i>
+                    <strong>Óptica:</strong> {{ paciente.optica || 'No especificada' }}
+                  </p>
+                  
+                  <p class="mb-1">
+                    <i class="bi bi-person-badge"></i>
+                    <strong>Doctor:</strong> {{ paciente.doctor || 'No especificado' }}
+                  </p>
+                  
+                  <p class="mb-1">
+                    <i class="bi bi-telephone"></i>
+                    <strong>Teléfono:</strong> {{ paciente.celular || 'No especificado' }}
+                  </p>
+                  
+
+                </div>
+                
+                <div class="text-center mt-3">
+                  <button class="btn btn-outline-primary btn-sm me-2" (click)="verOrden(paciente._id)">
+                    Ver Detalles
+                  </button>
+                  <button class="btn btn-outline-success btn-sm" (click)="descargarPDF(paciente); $event.stopPropagation()">
+                    <i class="bi bi-download"></i> Descargar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

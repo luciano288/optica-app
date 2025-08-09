@@ -1,0 +1,15 @@
+<header class="main-header">
+  <nav>
+    <div class="nav-center">
+      <button (click)="seccion = 'form'" [class.active]="seccion === 'form'">Cargar Paciente</button>
+      <button (click)="seccion = 'list'" [class.active]="seccion === 'list'">Ver Pacientes</button>
+    </div>
+    <div class="nav-right">
+      <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+    </div>
+  </nav>
+</header>
+<main>
+  <app-paciente-form *ngIf="seccion === 'form'"></app-paciente-form>
+  <app-lista-pacientes *ngIf="seccion === 'list'"></app-lista-pacientes>
+</main>
