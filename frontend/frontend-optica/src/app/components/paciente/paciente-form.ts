@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { API_BASE } from '../../services/api-config';
 import { NgForm } from '@angular/forms';
+import { jsPDF } from 'jspdf';
 
 @Component({
   selector: 'app-paciente-form',
@@ -84,6 +85,13 @@ export class PacienteFormComponent {
     const headers = new HttpHeaders(this.auth.getAuthHeader());
     this.http.post(`${API_BASE}/pacientes`, datosPaciente, { headers }).subscribe({
       next: (response: any) => {
+        // Descargar PDF de Detalle de la Orden usando la respuesta del backend
+        try {
+          this.descargarOrdenPDF(response);
+        } catch (e) {
+          // En caso de fallo al generar PDF, continuar flujo sin bloquear
+          console.error('Error generando PDF de la orden', e);
+        }
         this.mensaje = 'Paciente guardado exitosamente';
         this.loading = false;
         this.submitted = false;
@@ -170,5 +178,132 @@ export class PacienteFormComponent {
     const año = parseInt(m[3], 10);
     const dt = new Date(año, mes, dia);
     return dt.getFullYear() === año && dt.getMonth() === mes && dt.getDate() === dia;
+  }
+
+  private formatearFechaLectura(fecha: string): string {
+    if (!fecha) return '-';
+    // Si ya está en dd/mm/yyyy, devolverla
+    if (/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/.test(fecha)) {
+      return fecha;
+    }
+    // Si viene en yyyy-mm-dd, convertir
+    if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+      const [y, m, d] = fecha.split('-');
+      return `${d}/${m}/${y}`;
+    }
+    const d = new Date(fecha);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString('es-ES');
+    }
+    return fecha;
+  }
+
+  private descargarOrdenPDF(paciente: any) {
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const marginLeft = 20;
+    let cursorY = 20;
+
+    // Encabezado
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(18);
+    pdf.text('Detalle de la Orden', marginLeft, cursorY);
+    cursorY += 8;
+
+    pdf.setFontSize(11);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`Número de Orden: ${paciente?._id ?? '-'}`, marginLeft, cursorY);
+    pdf.text(`Fecha: ${this.formatearFechaLectura(paciente?.fecha)}`, 120, cursorY);
+    cursorY += 10;
+
+    // Datos del Paciente
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(14);
+    pdf.text('Datos del Paciente', marginLeft, cursorY);
+    cursorY += 7;
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(11);
+    pdf.text(`Paciente: ${paciente?.paciente ?? '-'}`, marginLeft, cursorY);
+    pdf.text(`Fecha de Nacimiento: ${this.formatearFechaLectura(paciente?.fechaNacimiento)}`, 120, cursorY);
+    cursorY += 7;
+    pdf.text(`Celular: ${paciente?.celular || 'No especificado'}`, marginLeft, cursorY);
+    pdf.text(`Email: ${paciente?.email || 'No especificado'}`, 120, cursorY);
+    cursorY += 10;
+
+    // Datos de la Óptica
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(14);
+    pdf.text('Datos de la Óptica', marginLeft, cursorY);
+    cursorY += 7;
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(11);
+    pdf.text(`Óptica: ${paciente?.optica ?? '-'}`, marginLeft, cursorY);
+    pdf.text(`Doctor: ${paciente?.doctor || 'No especificado'}`, 120, cursorY);
+    cursorY += 10;
+
+    // Prescripción
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(14);
+    pdf.text('Prescripción', marginLeft, cursorY);
+    cursorY += 7;
+
+    // Tabla simple de prescripción
+    const tableStartY = cursorY;
+    const colX = [marginLeft, marginLeft + 30, marginLeft + 60, marginLeft + 90, marginLeft + 120, marginLeft + 150, marginLeft + 180];
+    const headers = ['Ojo', 'Esf.', 'Cil.', 'Eje', 'Ad.', 'DNP', 'Alt.'];
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(11);
+    headers.forEach((h, i) => pdf.text(h, colX[i], tableStartY));
+
+    pdf.setFont('helvetica', 'normal');
+    const od = paciente?.prescripcion?.OD || {};
+    const oi = paciente?.prescripcion?.OI || {};
+    const rowGap = 7;
+
+    // OD
+    let rowY = tableStartY + rowGap;
+    const safe = (v: any) => (v ?? '-') + '';
+    const rows = [
+      ['OD', safe(od.Esf), safe(od.Cil), safe(od.Eje), safe(od.Ad), safe(od.DNP), safe(od.Alt)],
+      ['OI', safe(oi.Esf), safe(oi.Cil), safe(oi.Eje), safe(oi.Ad), safe(oi.DNP), safe(oi.Alt)]
+    ];
+
+    rows.forEach((r) => {
+      r.forEach((cell, i) => pdf.text(String(cell), colX[i], rowY));
+      rowY += rowGap;
+    });
+    cursorY = rowY + 3;
+
+    // Comentarios
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(14);
+    pdf.text('Comentarios', marginLeft, cursorY);
+    cursorY += 7;
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(11);
+    const comentario = paciente?.comentario || 'Sin comentarios';
+    const split = pdf.splitTextToSize(comentario, 170);
+    pdf.text(split, marginLeft, cursorY);
+    cursorY += Math.max(10, split.length * 5 + 2);
+
+    // QR (si existe)
+    if (paciente?.codigoQr) {
+      try {
+        const base64 = paciente.codigoQr.replace(/^data:image\/png;base64,/, '');
+        // Título QR
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(14);
+        pdf.text('Código QR', marginLeft, cursorY);
+        // Imagen QR
+        pdf.addImage(base64, 'PNG', marginLeft, cursorY + 5, 40, 40);
+        cursorY += 50;
+      } catch (_) {
+        // Ignorar si no se puede renderizar el QR
+      }
+    }
+
+    pdf.save(`orden-${paciente?._id ?? 'nueva'}.pdf`);
   }
 }
