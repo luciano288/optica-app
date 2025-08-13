@@ -9,5 +9,6 @@ router.post('/auth/login', login);
 router.post('/pacientes', verifyToken, controller.crearPaciente);
 router.get('/pacientes', verifyToken, controller.obtenerTodosPacientes);
 router.get('/pacientes/:id', controller.obtenerPaciente);
+router.delete('/pacientes/:id', verifyToken, controller.eliminarPaciente);
 
 module.exports = router;

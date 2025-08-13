@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { jsPDF } from 'jspdf';
@@ -9,15 +10,18 @@ import { API_BASE } from '../../services/api-config';
 @Component({
   selector: 'app-lista-pacientes',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule, HttpClientModule, FormsModule],
   templateUrl: './lista-pacientes.component.html',
   styleUrls: ['./lista-pacientes.component.css']
 })
 export class ListaPacientesComponent implements OnInit {
   pacientes: any[] = [];
+  pacientesFiltrados: any[] = [];
   loading: boolean = true;
   error: boolean = false;
   unauthorized: boolean = false;
+  terminoBusqueda: string = '';
+  eliminando: Record<string, boolean> = {};
 
   constructor(private http: HttpClient, private router: Router, private auth: AuthService) {}
 
@@ -32,7 +36,8 @@ export class ListaPacientesComponent implements OnInit {
     const headers = new HttpHeaders(this.auth.getAuthHeader());
     this.http.get(`${API_BASE}/pacientes`, { headers }).subscribe({
       next: (data: any) => {
-        this.pacientes = data;
+        this.pacientes = Array.isArray(data) ? data : [];
+        this.aplicarFiltroOrden();
         this.loading = false;
         this.error = false;
         this.unauthorized = false;
@@ -67,6 +72,35 @@ export class ListaPacientesComponent implements OnInit {
     return fecha;
   }
 
+  aplicarFiltroOrden() {
+    const termino = this.terminoBusqueda.trim().toLowerCase();
+    const base = this.pacientes.slice();
+    const filtrados = termino
+      ? base.filter(p => (p?.paciente || '').toLowerCase().includes(termino))
+      : base;
+    filtrados.sort((a, b) => (a?.paciente || '').localeCompare(b?.paciente || '', 'es', { sensitivity: 'base' }));
+    this.pacientesFiltrados = filtrados;
+  }
+
+  eliminarPaciente(pacienteId: string, event?: Event) {
+    if (event) { event.stopPropagation(); }
+    const confirmar = window.confirm('¿Desea borrar este paciente? Esta acción no se puede deshacer.');
+    if (!confirmar) return;
+    this.eliminando[pacienteId] = true;
+    const headers = new HttpHeaders(this.auth.getAuthHeader());
+    this.http.delete(`${API_BASE}/pacientes/${pacienteId}`, { headers }).subscribe({
+      next: () => {
+        this.pacientes = this.pacientes.filter(p => p._id !== pacienteId);
+        this.aplicarFiltroOrden();
+        delete this.eliminando[pacienteId];
+      },
+      error: () => {
+        delete this.eliminando[pacienteId];
+        alert('No se pudo eliminar el paciente.');
+      }
+    });
+  }
+
   descargarPDF(paciente: any) {
     const pdf = new jsPDF({
       orientation: 'landscape',
@@ -92,11 +126,8 @@ export class ListaPacientesComponent implements OnInit {
     pdf.setFont('helvetica', 'normal');
     pdf.text(`#${paciente._id}`, 0.3, 1.3);
 
-    // Óptica del cliente
-    pdf.text(paciente.optica || '', 0.3, 1.8);
-
     // Fecha
-    pdf.text(this.formatearFecha(paciente.fecha), 0.3, 2.3);
+    pdf.text(this.formatearFecha(paciente.fecha), 0.3, 1.8);
 
     // Nombre del paciente
     pdf.setFontSize(9);

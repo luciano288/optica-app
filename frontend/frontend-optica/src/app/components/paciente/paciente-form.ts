@@ -60,8 +60,13 @@ export class PacienteFormComponent {
       return;
     }
 
-    if (!this.esFechaDdMmYyyy(this.fecha) || !this.esFechaDdMmYyyy(this.fechaNacimiento)) {
+    if (!this.esFechaDdMmYyyy(this.fecha)) {
       this.mensaje = 'Las fechas deben tener formato dd/mm/yyyy válido';
+      return;
+    }
+    // fechaNacimiento es opcional, validar solo si viene
+    if (this.fechaNacimiento && !this.esFechaDdMmYyyy(this.fechaNacimiento)) {
+      this.mensaje = 'La fecha de nacimiento debe tener formato dd/mm/yyyy válido';
       return;
     }
 
@@ -69,18 +74,18 @@ export class PacienteFormComponent {
     this.mensaje = '';
 
     // Convertir/normalizar fechas al formato dd/mm/yyyy
-    const datosPaciente = {
+    const datosPaciente: any = {
       _id: this._id,
       fecha: this.formatearFechaParaBackend(this.fecha),
       paciente: this.paciente,
-      fechaNacimiento: this.formatearFechaParaBackend(this.fechaNacimiento),
+      fechaNacimiento: this.fechaNacimiento ? this.formatearFechaParaBackend(this.fechaNacimiento) : '',
       celular: this.celular,
       email: this.email,
-      optica: this.optica,
       doctor: this.doctor,
       prescripcion: this.prescripcion,
       comentario: this.comentario
     };
+    // No enviar optica (campo eliminado del formulario)
 
     const headers = new HttpHeaders(this.auth.getAuthHeader());
     this.http.post(`${API_BASE}/pacientes`, datosPaciente, { headers }).subscribe({

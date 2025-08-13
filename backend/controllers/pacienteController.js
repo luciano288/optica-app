@@ -40,3 +40,16 @@ exports.obtenerTodosPacientes = async (req, res) => {
     res.status(500).json({ error: 'Error al obtener pacientes' });
   }
 };
+
+exports.eliminarPaciente = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const eliminado = await Paciente.findByIdAndDelete(id);
+    if (!eliminado) {
+      return res.status(404).json({ error: 'Paciente no encontrado' });
+    }
+    return res.status(204).send();
+  } catch (error) {
+    return res.status(500).json({ error: 'Error al eliminar paciente' });
+  }
+};
