@@ -1,2 +1,50 @@
-.card { border-radius: 0.5rem; }
-.card-header { border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; }
+.auth-wrapper {
+  min-height: calc(100vh - 0px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: radial-gradient(1200px 600px at top right, rgba(11,95,179,0.08), transparent 60%),
+              radial-gradient(800px 400px at bottom left, rgba(11,95,179,0.06), transparent 60%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.login-header {
+  background: var(--brand-primary);
+  padding: 1.25rem 1.25rem 1rem 1.25rem;
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+}
+
+.login-header .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  opacity: 0.95;
+}
+.login-header .brand i { font-size: 1.25rem; }
+.login-header .brand span { font-weight: 600; letter-spacing: 0.2px; }
+
+.login-header h4 {
+  margin: 0.25rem 0 0.25rem 0;
+  font-weight: 700;
+}
+.login-header .subtitle {
+  margin: 0;
+  color: rgba(255,255,255,0.9);
+  font-size: 0.95rem;
+}
+
+.card-body { padding: 1.25rem 1.25rem 1.5rem 1.25rem; }
+
+.form-label { font-weight: 600; color: #111827; }
+
+.auth-footer { margin-top: 1rem; font-size: 0.85rem; }
