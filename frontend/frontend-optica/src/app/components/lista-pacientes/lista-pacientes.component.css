@@ -1,46 +1,22 @@
-.paciente-card {
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid #e0e0e0;
-  height: 100%;
-}
+.paciente-card { cursor: pointer; transition: all 0.3s ease; border: 1px solid var(--border); height: 100%; border-radius: var(--radius); }
 
-.paciente-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-  border-color: #007bff;
-}
+.paciente-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(2,6,23,0.12); border-color: var(--brand-primary); }
 
 .paciente-card .card-body {
   padding: 1.25rem;
 }
 
-.paciente-card .card-title {
-  color: #333;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
+.paciente-card .card-title { color: #111827; font-size: 1.1rem; font-weight: 600; }
 
-.paciente-info p {
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 0.5rem;
-}
+.paciente-info p { font-size: 0.925rem; color: var(--brand-muted); margin-bottom: 0.5rem; }
 
-.paciente-info i {
-  margin-right: 0.5rem;
-  color: #007bff;
-  width: 16px;
-}
+.paciente-info i { margin-right: 0.5rem; color: var(--brand-primary); width: 16px; }
 
 .paciente-info strong {
   color: #333;
 }
 
-.badge {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-}
+.badge { font-size: 0.75rem; padding: 0.25rem 0.5rem; }
 
 .btn-outline-primary {
   border-width: 1px;

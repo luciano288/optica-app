@@ -1,11 +1,11 @@
 /* Contenedor principal */
 .container {
-  max-width: 600px;
-  margin: 0 auto;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  padding: 2rem 1.5rem;
+  max-width: 720px;
+  margin: 1.5rem auto;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 25px rgba(2, 6, 23, 0.06);
+  padding: 2rem 1.75rem;
 }
 
 h2, h3, h4 {
@@ -26,8 +26,8 @@ label {
 input, textarea {
   width: 100%;
   padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
   font-size: 1rem;
   margin-top: 0.25rem;
   box-sizing: border-box;
@@ -36,17 +36,17 @@ input, textarea {
 button[type="submit"] {
   width: 100%;
   padding: 0.75rem;
-  background: #1976d2;
+  background: var(--brand-primary);
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 999px;
   font-size: 1.1rem;
   font-weight: 600;
   margin-top: 1.5rem;
   transition: background 0.2s;
 }
 button[type="submit"]:hover {
-  background: #125ea2;
+  background: var(--brand-primary-600);
 }
 
 .row {
@@ -72,9 +72,9 @@ button[type="submit"]:hover {
 }
 
 .form-control:focus {
-  border-color: #80bdff;
+  border-color: var(--brand-primary);
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(11, 95, 179, 0.15);
 }
 
 label {
@@ -124,15 +124,15 @@ label[for*="*"]::after {
 
 /* Mejoras para la sección de prescripción */
 h3 {
-  color: #007bff;
-  border-bottom: 2px solid #007bff;
+  color: var(--brand-primary);
+  border-bottom: 2px solid var(--brand-primary);
   padding-bottom: 0.5rem;
   margin-top: 2rem;
   margin-bottom: 1.5rem;
 }
 
 h4 {
-  color: #495057;
+  color: #1f2937;
   font-size: 1.1rem;
   margin-bottom: 1rem;
 }
